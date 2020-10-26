@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CLOUDFLARE_IPS_V4=$(curl -s --max-time 10 https://www.cloudflare.com/ips-v4)
-CLOUDFLARE_IPS_V6=$(curl -s --max-time 10 https://www.cloudflare.com/ips-v6)
+CLOUDFLARE_IPS_V4=$(/usr/bin/curl -s --max-time 10 https://www.cloudflare.com/ips-v4)
+CLOUDFLARE_IPS_V6=$(/usr/bin/curl --max-time 10 https://www.cloudflare.com/ips-v6)
 
 if [ -n "$CLOUDFLARE_IPS_V4" ] && [ -n "$CLOUDFLARE_IPS_V6" ]; then
   ufw --force reset
