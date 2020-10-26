@@ -1,0 +1,19 @@
+#!/bin/bash
+
+CLOUDFLARE_IPS_V4=$(curl -s --max-time 10 https://www.cloudflare.com/ips-v4)
+CLOUDFLARE_IPS_V6=$(curl -s --max-time 10 https://www.cloudflare.com/ips-v6)
+
+if [ -n "$CLOUDFLARE_IPS_V4" ] && [ -n "$CLOUDFLARE_IPS_V6" ]; then
+  ufw --force reset
+  for IP in $CLOUDFLARE_IPS_V4; do Where Is     ^K Cut Text     ^J Justify      ^C Cur Pos      M-U Undo        M-A Mark Text   M-] To Bracket
+    ufw allow from $IP to any port 80place      ^U Uncut Text   ^T To Spell     ^_ Go To Line   M-E Redo        M-6 Copy Text   ^Q Where Was
+    ufw allow from $IP to any port 4431-01:~# s
+  done s: command not found
+  for IP in $CLOUDFLARE_IPS_V6; do-fra1-01:~# ls
+    ufw allow from $IP to any port 80a1-01:~# nano muha
+    ufw allow from $IP to any port 4431-01:~# nano whitelist_cf_ips
+  doneloudpanel-debian-s-2vcpu-2gb-fra1-01:~# ls
+  ufw deny 80/tcp
+  ufw deny 443/tcpbian-s-2vcpu-2gb-fra1-01:~# mv muha whitelist_cloudflare_ips
+  ufw --force enablean-s-2vcpu-2gb-fra1-01:~# nano whitelist_cloudflare_ips
+fi
