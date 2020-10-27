@@ -9,7 +9,7 @@ if [ -n "$CLOUDFLARE_IPS_V4" ] && [ -n "$CLOUDFLARE_IPS_V6" ]; then
   /usr/sbin/ufw default allow outgoing
   for IP in $CLOUDFLARE_IPS_V4; do
     /usr/sbin/ufw allow from $IP to any port 80
-    /usr/sbin/ufw allow from $IP to any port 4431
+    /usr/sbin/ufw allow from $IP to any port 443
   done
   for IP in $CLOUDFLARE_IPS_V6; do
     /usr/sbin/ufw allow from $IP to any port 80
