@@ -35,7 +35,9 @@ try {
         throw new \Exception(sprintf('Home directory does not exist: %s', $homeDirectory));
     }
     $siteVarnishCacheDirectory = sprintf('%s/.varnish-cache/', rtrim($homeDirectory, '/'));
-    @mkdir($siteVarnishCacheDirectory, 0770);
+    if (false === file_exists($siteVarnishCacheDirectory)) {
+        @mkdir($siteVarnishCacheDirectory, 0770);
+    }
     chown($siteVarnishCacheDirectory, $siteUser);
     chgrp($siteVarnishCacheDirectory, $siteUser);
     $statement = $pdo->prepare('SELECT * FROM vhost_template WHERE name=:application');
@@ -54,9 +56,23 @@ try {
             if (false === copy($varnishControllerFile, $siteVarnishControllerFile)) {
                 throw new Exception(sprintf('Cannot copy file %s to %s', $varnishControllerFile, $siteVarnishControllerFile));
             }
-            chmod($siteVarnishControllerFile, 0770);
-            chown($siteVarnishControllerFile, $siteUser);
-            chgrp($siteVarnishControllerFile, $siteUser);
+            @chmod($siteVarnishControllerFile, 0770);
+            @chown($siteVarnishControllerFile, $siteUser);
+            @chgrp($siteVarnishControllerFile, $siteUser);
+            $varnishCacheSettings = [
+                'enabled'        => false,
+                'server'         => '127.0.0.1:6081',
+                'cacheTagPrefix' => substr(md5(time()), 0, 4),
+                'cacheLifetime'  => $varnishCacheSettings['cacheLifetime'],
+                'excludes'       => $varnishCacheSettings['excludes'],
+                'excludedParams' => $varnishCacheSettings['excludedParams'],
+            ];
+            $varnishCacheSettings = json_encode($varnishCacheSettings, JSON_PRETTY_PRINT);
+            $settingsFile = sprintf('%s/settings.json', rtrim($siteVarnishCacheDirectory, '/'));
+            file_put_contents($settingsFile, $varnishCacheSettings, FILE_APPEND | LOCK_EX);
+            @chmod($settingsFile, 0770);
+            @chown($settingsFile, $siteUser);
+            @chgrp($settingsFile, $siteUser);
             $muha = 1;
         }
     }
