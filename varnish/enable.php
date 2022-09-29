@@ -1,4 +1,3 @@
-#!/usr/bin/env php8.1
 <?php
 
 error_reporting((E_ALL | E_STRICT) ^ E_NOTICE);
