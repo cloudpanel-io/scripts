@@ -19,6 +19,9 @@ try {
     if (false === file_exists($sqliteDatabaseFile)) {
         throw new \Exception(sprintf('SQLite Database "%s" does not exist.', $sqliteDatabaseFile));
     }
+    if (false === file_exists($varnishControllerDirectory)) {
+        throw new \Exception(sprintf('Varnish controller directory does not exist. Did you update to 2.1?'));
+    }
     $pdo = new \PDO(sprintf('sqlite:%s', $sqliteDatabaseFile));
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $statement = $pdo->prepare('SELECT * FROM site WHERE domain_name=:domainName');
@@ -69,7 +72,7 @@ try {
             ];
             $varnishCacheSettings = json_encode($varnishCacheSettings, JSON_PRETTY_PRINT);
             $settingsFile = sprintf('%s/settings.json', rtrim($siteVarnishCacheDirectory, '/'));
-            file_put_contents($settingsFile, $varnishCacheSettings, FILE_APPEND | LOCK_EX);
+            file_put_contents($settingsFile, $varnishCacheSettings);
             @chmod($settingsFile, 0770);
             @chown($settingsFile, $siteUser);
             @chgrp($settingsFile, $siteUser);
