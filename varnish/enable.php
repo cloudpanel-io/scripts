@@ -87,6 +87,6 @@ try {
         throw new Exception(sprintf('Vhost for application "%s" does not exist.', $application));
     }
 } catch (\Exception $e) {
-    $errorMessage = sprintf('An error occurred: %s %s', $e->getMessage(), PHP_EOL);
+    $errorMessage = sprintf('Error: %s %s', $e->getMessage(), PHP_EOL);
     echo $errorMessage;
 }
