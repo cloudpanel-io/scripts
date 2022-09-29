@@ -26,7 +26,7 @@ try {
     $statement->execute();
     $site = $statement->fetch(PDO::FETCH_ASSOC);
     if (false === isset($site['id'])) {
-        throw new \Exception(sprint('Site with domain name %s does not exist.', $domainName));
+        throw new \Exception(sprintf('Site "%s" does not exist.', $domainName));
     }
     $siteId = $site['id'];
     $siteUser = $site['user'];
@@ -73,8 +73,15 @@ try {
             @chmod($settingsFile, 0770);
             @chown($settingsFile, $siteUser);
             @chgrp($settingsFile, $siteUser);
-            $muha = 1;
+            $statement = $pdo->prepare('Update site set varnish_cache=1 WHERE id=:siteId');
+            $statement->bindParam(':siteId', $siteId,PDO::PARAM_STR);
+            $statement->execute();
+            $successMessage = 'Done! Replace the current vhost with the varnish vhost and enjoy Varnish Cache :-)';
+            echo $successMessage.PHP_EOL;
+            exit;
         }
+    } else {
+        throw new Exception(sprintf('Vhost for application "%s" does not exist.', $application));
     }
 } catch (\Exception $e) {
     $errorMessage = sprintf('An error occurred: %s %s', $e->getMessage(), PHP_EOL);
