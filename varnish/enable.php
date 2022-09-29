@@ -24,11 +24,18 @@ try {
     if (false === file_exists($varnishControllerFile)) {
         throw new \Exception(sprintf('Varnish controller file %s not found.', $varnishControllerFile));
     }
-    $muha = 1;
-    //$pdo = new \PDO(sprintf('sqlite:%s', $sqliteDatabaseFile));
-
-    $muha = 1;
-
+    $pdo = new \PDO(sprintf('sqlite:%s', $sqliteDatabaseFile));
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $statement = $pdo->prepare('SELECT * FROM vhost_template WHERE name=:application');
+    $statement->bindParam(':application', $application,PDO::PARAM_STR);
+    $statement->execute();
+    $vhostTemplate = $statement->fetch(PDO::FETCH_ASSOC);
+    if (true === isset($vhostTemplate['varnish_cache_settings']) && false === empty($vhostTemplate['varnish_cache_settings'])) {
+        $varnishCacheSettings = json_decode($vhostTemplate['varnish_cache_settings'], true);
+        if (true === isset($varnishCacheSettings['cacheLifetime'])) {
+            $muha = 1;
+        }
+    }
 } catch (\Exception $e) {
     $errorMessage = sprintf('An error occurred: %s %s', $e->getMessage(), PHP_EOL);
     echo $errorMessage;
