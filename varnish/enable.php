@@ -29,6 +29,15 @@ try {
         throw new \Exception(sprint('Site with domain name %s does not exist.', $domainName));
     }
     $siteId = $site['id'];
+    $siteUser = $site['user'];
+    $homeDirectory = sprintf('/home/%s/', $siteUser);
+    if (false === file_exists($homeDirectory)) {
+        throw new \Exception(sprintf('Home directory does not exist: %s', $homeDirectory));
+    }
+    $siteVarnishCacheDirectory = sprintf('%s/.varnish-cache/', rtrim($homeDirectory, '/'));
+    @mkdir($siteVarnishCacheDirectory, 0770);
+    chown($siteVarnishCacheDirectory, $siteUser);
+    chgrp($siteVarnishCacheDirectory, $siteUser);
     $statement = $pdo->prepare('SELECT * FROM vhost_template WHERE name=:application');
     $statement->bindParam(':application', $application,PDO::PARAM_STR);
     $statement->execute();
@@ -41,6 +50,13 @@ try {
             if (false === file_exists($varnishControllerFile)) {
                 throw new \Exception(sprintf('Varnish controller file %s not found.', $varnishControllerFile));
             }
+            $siteVarnishControllerFile = sprintf('%s/controller.php', rtrim($siteVarnishCacheDirectory, '/'));
+            if (false === copy($varnishControllerFile, $siteVarnishControllerFile)) {
+                throw new Exception(sprintf('Cannot copy file %s to %s', $varnishControllerFile, $siteVarnishControllerFile));
+            }
+            chmod($siteVarnishControllerFile, 0770);
+            chown($siteVarnishControllerFile, $siteUser);
+            chgrp($siteVarnishControllerFile, $siteUser);
             $muha = 1;
         }
     }
